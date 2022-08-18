@@ -23,7 +23,6 @@ parser.add_argument("-pm", "--pretrained_model", choices=['resnet50', 'vgg16'], 
 parser.add_argument("-sn", "--save_to_npz", choices=("True","False"), required=False, help="Save the loaded data as npz files")
 parser.add_argument("-us", "--upsampling_size", type=int, required=False, help="Upsampling size")
 parser.add_argument("-g", "--use_grayscale", choices=("True","False"), required=False, help="If using grayscale images (8 bit images) for pretrained model that was trained on rgb images (24 bit images)")
-parser.add_argument("-sn", "--save_to_npz", choices=("True","False"), required=False, help="Save images and labels to npz files")
 
 try:
     args = parser.parse_args()

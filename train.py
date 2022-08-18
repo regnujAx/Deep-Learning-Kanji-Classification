@@ -18,14 +18,13 @@ def train_model(data_loader, batch_size, epochs, learning_rate):
     model.summary()
 
     history = model.fit(
-      train_images, train_labels, 
-      epochs=epochs, 
-      validation_data=(validation_images, validation_labels), 
-      batch_size=batch_size
-    )
+      train_images, train_labels,
+      epochs=epochs,
+      validation_data=(validation_images, validation_labels),
+      batch_size=batch_size)
 
     save_model(model)
-    
+
     return model, history
 
 
@@ -35,8 +34,7 @@ def save_model(model, save_name=""):
     currentDateTime = today.strftime("%b-%d-%Y-%H-%M-%S")
 
     # Save the model
-    save_dir = "model_" + currentDateTime
+    save_file_name = f"model_{currentDateTime}"
     if save_name != "":
-        save_dir = save_name
-    model.save(save_dir)
-
+        save_file_name = f"{save_name}_{save_file_name}"
+    model.save(f"{save_file_name}.h5")

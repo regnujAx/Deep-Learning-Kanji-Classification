@@ -9,18 +9,18 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 def evaluate_model(model, test_images, test_labels, batch_size):
     print("\nEvaluate model on test data:")
     results = model.evaluate(test_images, test_labels, batch_size=batch_size)
-    print("Test loss: {:.4f}".format(results[0]))
-    print("Test accuracy: {:.4f}".format(results[1]))
+    print("Test loss:", results[0])
+    print("Test accuracy:", results[1])
     print("\n\n")
-    
+
     # Get the current date and time
     today = datetime.now()
     currentDateTime = today.strftime("%b-%d-%Y-%H-%M-%S")
 
     f = open("evaluation.txt", "a")
-    f.write(currentDateTime + ":\n")
-    f.write("The test loss is: " + str(results[0]) + "\n")
-    f.write("The test accuracy is: " + str(results[1]) + "\n\n")
+    f.write(f"{currentDateTime}:\n")
+    f.write(f"The test loss is: {str(results[0])}\n")
+    f.write(f"The test accuracy is: {str(results[1])}\n\n")
 
     predictions = model.predict(test_images, batch_size=batch_size)
 
@@ -35,28 +35,73 @@ def evaluate_model(model, test_images, test_labels, batch_size):
     print("The Precision is:", precision)
     print("The Recall is:", recall)
     print("The F1-score is:", f1)
-    f.write("The Precision is: " + str(precision) + "\n")
-    f.write("The Recall is: " + str(recall) + "\n")
-    f.write("The F1-score is: " + str(f1) + "\n\n")
+    f.write(f"The Precision is: {str(precision)}\n")
+    f.write(f"The Recall is: {str(recall)}\n")
+    f.write(f"The F1-score is: {str(f1)}\n\n")
     f.close()
 
 
-def plot_accuracy_and_loss(history, number):
+def plot_accuracy_and_loss(history, label):
     # Plot accuracy and loss
-    plt.plot(history.history['loss'], label = 'Training loss')
-    plt.plot(history.history['val_loss'], label = 'Validation loss')
+    plt.plot(history.history["loss"], label = "Training loss")
+    plt.plot(history.history["val_loss"], label = "Validation loss")
     plt.legend()
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss')
-    plt.suptitle('Loss', fontsize=20)
-    plt.savefig(f'loss_{number}.png')
+    plt.xlabel("Epochs")
+    plt.ylabel("Loss")
+    plt.suptitle("Loss", fontsize=20)
+    plt.savefig(f"loss_{label}.png")
     plt.clf()
 
-    plt.plot(history.history['accuracy'], label = 'Training accuracy')
-    plt.plot(history.history['val_accuracy'], label = 'Validation accuracy')
+    plt.plot(history.history["accuracy"], label = "Training accuracy")
+    plt.plot(history.history["val_accuracy"], label = "Validation accuracy")
     plt.legend()
-    plt.xlabel('Epochs')
-    plt.ylabel('Accuracy')
-    plt.suptitle('Accuracy', fontsize=20)
-    plt.savefig(f'accuracy_{number}.png')
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")
+    plt.suptitle("Accuracy", fontsize=20)
+    plt.savefig(f"accuracy_{label}.png")
     plt.clf()
+
+
+def plot_predictions(model, test_images, test_labels, label="", channels=1):
+    n = 8
+    save_name = "predictions.png"
+    if label != "":
+        save_name = f"predictions_{label}.png"
+
+    # Generate n² random output predictions
+    random_idx = np.random.randint(0, test_images.shape[0], n**2)
+
+    random_set = test_images[random_idx]
+    random_labels = test_labels[random_idx].argmax(axis=1).reshape(n, n)
+    pred_labels = model.predict(random_set).argmax(axis=1).reshape(n, n)
+
+    random_set = random_set.reshape(n, n, 64, 64, channels)
+
+    # Create an n x n grid
+    fig, ax = plt.subplots(n, n, figsize=(15, 15))
+    fig.suptitle("Test set predictions (truth label/prediction label)", fontsize=20)
+
+    for i in range(random_set.shape[0]):
+        for j in range(random_set.shape[1]):
+            example = random_set[i, j]
+            ax[i, j].imshow(example, cmap="gray")
+            ax[i, j].set_xticks([])
+            ax[i, j].set_yticks([])
+            color = ("green" if random_labels[i, j] == pred_labels[i, j] else "red")
+            random_label = get_correct_label(random_labels[i, j])
+            pred_label = get_correct_label(pred_labels[i, j])
+            ax[i, j].set_title(f"{random_label}/{pred_label}", color=color)
+
+    plt.subplots_adjust(hspace=0.5)
+    plt.savefig(save_name)
+    # plt.show()
+
+
+def get_correct_label(label):
+    # This is only a hotfix to correct the labels numbers
+    # if label < 6:
+    #     label += 10
+    # else:
+    #     label -= 5
+
+    return label

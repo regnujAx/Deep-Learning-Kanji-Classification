@@ -1,7 +1,8 @@
 # Local folders
-model_*/
+*model*/
 
 # Local files
+*.h5
 *.npz
 *.png
 *.txt

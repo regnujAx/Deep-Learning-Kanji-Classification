@@ -1,0 +1,238 @@
+import numpy as np
+import os
+import pandas as pd
+import random
+import time
+
+from keras.utils import to_categorical
+
+from PIL import Image
+
+from sklearn.model_selection import train_test_split
+from sklearn.utils import resample
+
+
+class DataLoader:
+
+    image_dim = 64
+    input_shape = (image_dim, image_dim, 1)
+
+    def __init__(self, data_dir, balancing=True, upsampling_size=25, load_from_npz=False, npz_paths=[], save_to_npz=True, csv_file="", use_grayscale=False):
+        self.data_dir = data_dir
+        
+        if load_from_npz:
+            preprocessed_data = self.load_images_and_labels_from_npz(npz_paths)
+            self.num_classes = preprocessed_data[6]
+        else:
+            if csv_file != "":
+                data = self.load_data_from_csv(data_dir, csv_file)
+            else:
+                data = self.load_data(data_dir)
+
+            if balancing:
+                data = self.balance_data(data, upsampling_size)
+            
+            images, labels = self.load_images_and_labels(data)
+            self.num_classes = self.get_number_of_classes(labels)
+            preprocessed_data = self.preprocess(images, labels, self.num_classes, save_to_npz, use_grayscale)
+        self.train_images = preprocessed_data[0]
+        self.train_labels = preprocessed_data[1]
+        self.validation_images = preprocessed_data[2]
+        self.validation_labels = preprocessed_data[3]
+        self.test_images = preprocessed_data[4]
+        self.test_labels = preprocessed_data[5]
+
+
+    def load_data_from_csv(self, data_dir, csv_file):
+        print("Load data from directory with csv file...")
+
+        data_frame = pd.read_csv(csv_file)
+
+        files = 0
+        data = {}
+        for _, row in data_frame.iterrows():
+            label = row['code']
+            file_path = os.path.join(data_dir, f"input_{row['suite_id']}_{row['sample_id']}_{label}.jpg")
+            files += 1
+
+            if label in data:
+                data[label].append(file_path)
+            else:
+                data[label] = [file_path]
+
+        print(f"{files} files found")
+
+        return data
+
+
+    def load_data(self, data_dir):
+        print("Load data from directory...")
+
+        # Walk through the data directory and save all files in a dict
+        files = 0
+        x = 0
+        data = {}
+        for dir_path, _, file_names in os.walk(data_dir):
+            label = os.path.basename(dir_path)
+            for file in file_names:
+                files += 1
+                file_path = os.path.join(dir_path, file)
+                if label in data:
+                    data[label].append(file_path)
+                else:
+                    data[label] = [file_path]
+            x += 1
+
+        print(f"{files} files found")
+
+        return data
+
+        # files = 0
+        # n = 1000
+        # sampled_data = dict(random.sample(data.items(), 50))
+
+        # f = open("labels.npz", "a")
+        # for label, images in sampled_data.items():
+        #     f.write(label + "\n")
+        #     files += len(images)
+        # f.write("\n")
+        
+        # print(f"{files} files selected")
+
+        # return sampled_data
+
+
+    def load_images_and_labels_from_npz(self, npz_paths):
+        print("Load data from npz files...")
+
+        train_images_path, train_labels_path, test_images_path, test_labes_path = npz_paths
+        
+        train_images = np.load(train_images_path)['arr_0']
+        train_labels = np.load(train_labels_path)['arr_0']
+        test_images = np.load(test_images_path)['arr_0']
+        test_labels = np.load(test_labes_path)['arr_0']
+        print(f"\nNumber of training samples: {len(train_images)} where each sample is of size: {train_images.shape[1:]}")
+        print(f"\nNumber of validation samples: {len(test_images)} where each sample is of size: {test_images.shape[1:]}")
+        
+        num_classes = train_labels.shape[1]
+        print("\nNumber of classes:", num_classes)
+
+        # Split the train dataset in train and validation datasets
+        train_images, validation_images, train_labels, validation_labels = train_test_split(train_images, train_labels, test_size = 0.1)
+
+        # Normalize the datasets
+        train_images = train_images.reshape(train_images.shape[0], train_images.shape[1], train_images.shape[2], 1)/255
+        validation_images = validation_images.reshape(validation_images.shape[0], validation_images.shape[1], validation_images.shape[2], 1)/255
+        test_images = test_images.reshape(test_images.shape[0], test_images.shape[1], test_images.shape[2], 1)/255
+
+        return train_images, train_labels, validation_images, validation_labels, test_images, test_labels, num_classes
+
+
+    def balance_data(self, data, upsampling_size):
+        # Up- and downsample the imbalanced data to balance it
+        for key, value in data.items():
+            value_upsampled = resample(value, 
+                                      replace=True,                # sample with replacement
+                                      n_samples=upsampling_size,   # to have at least 100 samples per class
+                                      random_state=123)
+            data[key] = value_upsampled
+
+        print("\nData balanced")
+
+        return data
+
+
+    def load_images_and_labels(self, data, image_dim=64):
+        images = np.empty((0, image_dim, image_dim), int)
+        images2 = np.empty((0, image_dim, image_dim), int)
+        images3 = np.empty((0, image_dim, image_dim), int)
+        images4 = np.empty((0, image_dim, image_dim), int)
+        labels = np.array([], int)
+        i = 0
+        number_of_arrays = 4
+        images_length = int(len(data.keys()) / number_of_arrays)
+        print("images_length:", images_length)
+
+        start_time = time.time()
+        for label in data.keys():
+            images_chunk = np.empty((0, image_dim, image_dim), int)
+            print("-----", i)
+            files = []
+            for index, file in enumerate(data[label]):
+                # print(index)
+                # print(file)
+                # img = np.array(Image.open(file))
+                if file not in files:
+                    img = np.array(Image.open(file))
+                    files.append(file)
+                else:
+                    img = images_chunk[index-1]
+                images_chunk = np.append(images_chunk, img.reshape(1, image_dim, image_dim), axis=0)
+                # images = np.append(images, img.reshape(1, image_dim, image_dim), axis=0)
+                labels = np.append(labels, i)
+            if i < images_length:
+                images = np.concatenate((images, images_chunk))
+            elif i < images_length * 2:
+                images2 = np.concatenate((images2, images_chunk))
+            elif i < images_length * 3:
+                images3 = np.concatenate((images3, images_chunk))
+            else:
+                images4 = np.concatenate((images4, images_chunk))
+            i = i + 1
+        images = np.concatenate((images, images2, images3, images4))
+
+        print(f"\nNumber of samples: {len(images)} where each sample is of size: {images.shape[1:]}")
+        elapsed_time = time.time() - start_time
+        time_string = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
+        print("\nElapsed time for data preparation:", time_string)
+
+        return images, labels
+
+
+    def get_number_of_classes(self, labels):
+        num_classes = len(np.unique(labels))
+        print("\nNumber of classes:", num_classes)
+
+        return num_classes
+
+
+    def preprocess(self, images, labels, num_classes, save_to_npz, use_grayscale):
+        if use_grayscale:
+            # Add additional channels to grayscale images (for pretrained models)
+            images = np.repeat(images[..., np.newaxis], 3, -1) 
+        else: 
+            # Use expand_dims to get a nominal deep learning format for all images
+            # (64, 64) --> (64, 64, 1)
+            images = np.expand_dims(images, axis=-1)
+
+        # Convert label vector to matrix
+        labels = to_categorical(labels, num_classes)
+
+        # Split the whole dataset in train and test datasets (images and labels)
+        train_images, test_images, train_labels, test_labels = train_test_split(images, labels, test_size=0.09)
+        print("Data splitted in train and test sets")
+
+        if save_to_npz:
+            print("Save train and test sets and labels to npz files...")
+            np.savez('train_images.npz', train_images)
+            np.savez('test_images.npz', test_images)
+            # np.savez('validation_images.npz', validation_images)
+            np.savez('train_labels.npz', train_labels)
+            np.savez('test_labels.npz', test_labels)
+            # np.savez('validation_labels.npz', validation_labels)
+
+        # Split the train dataset in train and validation datasets (images and labels)
+        train_images, validation_images, train_labels, validation_labels = train_test_split(train_images, train_labels, test_size=0.1)
+        print("Train set splitted in train and validation sets")
+
+        # Normalize the datasets
+        train_images = train_images.reshape(train_images.shape[0], train_images.shape[1], train_images.shape[2], 1)/255
+        validation_images = validation_images.reshape(validation_images.shape[0], validation_images.shape[1], validation_images.shape[2], 1)/255
+        test_images = test_images.reshape(test_images.shape[0], test_images.shape[1], test_images.shape[2], 1)/255
+        
+        # Print the dimensions of the datasets
+        print(f"\nTrain images dimensions: {train_images.shape}")
+        print(f"\nValidation images dimensions: {validation_images.shape}")
+        print(f"\nTest images dimensions: {test_images.shape}")
+
+        return train_images, train_labels, validation_images, validation_labels, test_images, test_labels

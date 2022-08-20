@@ -7,10 +7,11 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 
 
 def evaluate_model(model, test_images, test_labels, batch_size):
-    print("\nEvaluate model on test data:")
+    print("Evaluate model on test data...")
+
     results = model.evaluate(test_images, test_labels, batch_size=batch_size)
-    print("Test loss:", results[0])
-    print("Test accuracy:", results[1])
+    print("The test loss is:", results[0])
+    print("The test accuracy is:", results[1])
     print("\n\n")
 
     # Get the current date and time
@@ -42,7 +43,8 @@ def evaluate_model(model, test_images, test_labels, batch_size):
 
 
 def plot_accuracy_and_loss(history, label):
-    # Plot accuracy and loss
+    print("Plot loss and accuracy...")
+
     plt.plot(history.history["loss"], label = "Training loss")
     plt.plot(history.history["val_loss"], label = "Validation loss")
     plt.legend()
@@ -63,6 +65,8 @@ def plot_accuracy_and_loss(history, label):
 
 
 def plot_predictions(model, test_images, test_labels, label="", channels=1):
+    print("Plot some output predictions...")
+
     n = 8
     save_name = "predictions.png"
     if label != "":
@@ -88,20 +92,10 @@ def plot_predictions(model, test_images, test_labels, label="", channels=1):
             ax[i, j].set_xticks([])
             ax[i, j].set_yticks([])
             color = ("green" if random_labels[i, j] == pred_labels[i, j] else "red")
-            random_label = get_correct_label(random_labels[i, j])
-            pred_label = get_correct_label(pred_labels[i, j])
+            random_label = random_labels[i, j]
+            pred_label = pred_labels[i, j]
             ax[i, j].set_title(f"{random_label}/{pred_label}", color=color)
 
     plt.subplots_adjust(hspace=0.5)
     plt.savefig(save_name)
     # plt.show()
-
-
-def get_correct_label(label):
-    # This is only a hotfix to correct the labels numbers
-    # if label < 6:
-    #     label += 10
-    # else:
-    #     label -= 5
-
-    return label

@@ -10,8 +10,9 @@ parser = argparse.ArgumentParser(description="Train or run a neural network mode
 parser.add_argument("-b", "--balancing", choices=("True","False"), required=False, help="Balance the data")
 parser.add_argument("-bs", "--batch_size", type=int, required=False, help="Batch size")
 parser.add_argument("-c", "--csv_file", type=str, required=False, help="Path to a csv file for data loading")
-parser.add_argument("-d", "--data", required=True, help="Path to the dataset to train the model")
+parser.add_argument("-d", "--data", required=False, help="Path to the dataset to train the model")
 parser.add_argument("-e", "--epochs", type=int, required=False, help="Number of training epochs")
+parser.add_argument("-g", "--use_grayscale", choices=("True","False"), required=False, help="If using grayscale images (8 bit images) for pretrained model that was trained on rgb images (24 bit images)")
 parser.add_argument("-l", "--label", type=str, required=False, help="Add a individual label")
 parser.add_argument("-ln", "--load_from_npz", choices=("True","False"), required=False, help="Load data from npz files (only with -np/--npz_paths argument to load from the passed paths)")
 parser.add_argument("-lr", "--learning_rate", type=float, required=False, help="Learning rate")
@@ -22,7 +23,6 @@ parser.add_argument("-np", "--npz_paths", nargs="+", required=False, help="Paths
 parser.add_argument("-pm", "--pretrained_model", choices=['resnet50', 'vgg16'], required=False, help="Select a pretrained model for transfer learning")
 parser.add_argument("-sn", "--save_to_npz", choices=("True","False"), required=False, help="Save the loaded data as npz files")
 parser.add_argument("-us", "--upsampling_size", type=int, required=False, help="Upsampling size")
-parser.add_argument("-g", "--use_grayscale", choices=("True","False"), required=False, help="If using grayscale images (8 bit images) for pretrained model that was trained on rgb images (24 bit images)")
 
 try:
     args = parser.parse_args()
@@ -86,7 +86,8 @@ try:
         load_from_npz=load_from_npz, npz_paths=npz_paths,
         save_to_npz=save_to_npz,
         csv_file=csv_file,
-        use_grayscale=use_grayscale)
+        use_grayscale=use_grayscale,
+        label=label)
 
     test_images = data_loader.test_images
     test_labels = data_loader.test_labels
@@ -101,5 +102,6 @@ try:
         model, history = train.train_model(data_loader, batch_size, epochs, learning_rate)
         test.plot_accuracy_and_loss(history, label=label)
         test.evaluate_model(model, test_images, test_labels, batch_size)
+        test.plot_predictions(model, test_images, test_labels, label=label)
 except Exception as e:
     print(e)

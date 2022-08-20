@@ -16,9 +16,12 @@ class DataLoader:
 
     image_dim = 64
 
-    def __init__(self, data_dir, balancing=True, upsampling_size=25, load_from_npz=False, npz_paths=[], save_to_npz=True, csv_file="", use_grayscale=False):
-        self.data_dir = data_dir
-
+    def __init__(
+            self, data_dir,
+            balancing=True, upsampling_size=25,
+            load_from_npz=False, npz_paths=[],
+            save_to_npz=True, csv_file="",
+            use_grayscale=False, label=""):
         channels = 1
         if use_grayscale:
             channels = 3
@@ -39,7 +42,8 @@ class DataLoader:
 
             images, labels = self.load_images_and_labels(data)
             self.num_classes = self.get_number_of_classes(labels)
-            preprocessed_data = self.preprocess(images, labels, self.num_classes, save_to_npz, use_grayscale)
+            preprocessed_data = self.preprocess(images, labels, self.num_classes, save_to_npz, use_grayscale, label)
+
         self.train_images = preprocessed_data[0]
         self.train_labels = preprocessed_data[1]
         self.validation_images = preprocessed_data[2]
@@ -67,6 +71,9 @@ class DataLoader:
                 data[label] = [file_path]
 
         print(f"{files} files found")
+
+        # Sort the data (needs Python 3.7 or higher)
+        data = dict(sorted(data.items()))
 
         return data
 
@@ -140,6 +147,8 @@ class DataLoader:
 
 
     def balance_data(self, data, upsampling_size):
+        print("Balance data...")
+
         # Up- and downsample imbalanced data to balance it
         for key, value in data.items():
             value_upsampled = resample(
@@ -149,17 +158,21 @@ class DataLoader:
                 random_state=123)
             data[key] = value_upsampled
 
-        print("\nData balanced")
-
         return data
 
 
-    def load_images_and_labels(self, data, image_dim=64):
+    def load_images_and_labels(self, data):
+        image_dim = self.image_dim
+
+        print("Load images and labels from data...")
+
+        # Create 4 image arrays to speed up the data loading
         images1 = np.empty((0, image_dim, image_dim), int)
         images2 = np.empty((0, image_dim, image_dim), int)
         images3 = np.empty((0, image_dim, image_dim), int)
         images4 = np.empty((0, image_dim, image_dim), int)
         labels = np.array([], int)
+
         i = 0
         number_of_arrays = 4
         images_length = int(len(data.keys()) / number_of_arrays)
@@ -212,12 +225,12 @@ class DataLoader:
         return num_classes
 
 
-    def preprocess(self, images, labels, num_classes, save_to_npz, use_grayscale):
+    def preprocess(self, images, labels, num_classes, save_to_npz, use_grayscale, label):
         channels = 1
         if use_grayscale:
             # Add additional channels to grayscale images (for pretrained models)
-            images = np.repeat(images[..., np.newaxis], 3, -1) 
             channels = 3
+            images = np.repeat(images[..., np.newaxis], channels, -1)
         else: 
             # Use expand_dims to get a nominal deep learning format for all images
             # (64, 64) --> (64, 64, 1)
@@ -232,10 +245,10 @@ class DataLoader:
 
         if save_to_npz:
             print("Save train and test sets and labels to npz files...")
-            np.savez("train_images.npz", train_images)
-            np.savez("test_images.npz", test_images)
-            np.savez("train_labels.npz", train_labels)
-            np.savez("test_labels.npz", test_labels)
+            np.savez(f"train_images_{label}.npz", train_images)
+            np.savez(f"test_images_{label}.npz", test_images)
+            np.savez(f"train_labels_{label}.npz", train_labels)
+            np.savez(f"test_labels_{label}.npz", test_labels)
 
         # Split the train dataset in train and validation datasets (images and labels)
         train_images, validation_images, train_labels, validation_labels = train_test_split(train_images, train_labels, test_size=0.1)

@@ -1,13 +1,10 @@
 # internal scripts
 import test, train
 
-
-from tensorflow import keras
-
 from keras import Input
 from keras.applications.resnet import ResNet50
 from keras.applications.vgg16 import VGG16
-from keras.layers import Dense, GlobalAveragePooling2D
+from keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from keras.losses import categorical_crossentropy
 from keras.models import Model
 from keras.optimizers import Adam
@@ -33,10 +30,17 @@ def transfer_learning_with_local_model(loaded_model, data_loader, batch_size, ep
     inputs = Input(shape=input_shape)
 
     # Run the loaded model in inference mode
-    x = loaded_model(inputs, training=False)
+    new_model = loaded_model(inputs, training=False)
+
+    # Add some Dense layer to improve the model
+    new_model = Dense(1024, activation='relu')(new_model)
+    new_model = Dense(512, activation='relu')(new_model)
+    new_model = Dense(256, activation='relu')(new_model)
+    new_model = Dense(128, activation='relu')(new_model)
+    new_model = Dropout(0.3)(new_model)
 
     # Add a Dense layer with num_classes units
-    outputs = Dense(num_classes)(x)
+    outputs = Dense(num_classes, activation="softmax")(new_model)
 
     model = Model(inputs, outputs)
 
@@ -108,5 +112,5 @@ def transfer_learning_with_pretrained_model(model_name, data_loader, batch_size,
 
     train.save_model(model, save_name=model_name)
     test.plot_accuracy_and_loss(history, model_name)
-    test.plot_predictions(model, test_images, test_labels, label=model_name, channels=3)
     test.evaluate_model(model, test_images, test_labels, batch_size)
+    test.plot_predictions(model, test_images, test_labels, label=model_name, channels=3)

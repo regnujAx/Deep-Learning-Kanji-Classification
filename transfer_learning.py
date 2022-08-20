@@ -22,8 +22,6 @@ def transfer_learning_with_local_model(loaded_model, data_loader, batch_size, ep
     test_images = data_loader.test_images
     test_labels = data_loader.test_labels
 
-    ## loaded_model.summary()
-
     # Freeze the loaded model
     loaded_model.trainable = False
 
@@ -80,7 +78,7 @@ def transfer_learning_with_pretrained_model(model_name, data_loader, batch_size,
     else:
         # Create the base pretrained ResNet50 model
         base_model = ResNet50(weights="imagenet", include_top=False, input_shape=input_shape)
-    
+
     # Add a global spatial average pooling layer
     x = base_model.output
     x = GlobalAveragePooling2D()(x)

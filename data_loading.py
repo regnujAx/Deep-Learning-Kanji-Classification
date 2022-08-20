@@ -14,19 +14,21 @@ from sklearn.utils import resample
 
 class DataLoader:
 
-    image_dim = 64
+    # image_dim = 64
 
     def __init__(
             self, data_dir,
-            balancing=True, upsampling_size=25,
-            load_from_npz=False, npz_paths=[],
-            save_to_npz=True, csv_file="",
-            use_grayscale=False, label=""):
+            balancing, upsampling_size,
+            load_from_npz, npz_paths,
+            save_to_npz, csv_file,
+            use_grayscale, label,
+            resize_shape):
         channels = 1
         if use_grayscale:
             channels = 3
 
-        self.input_shape = (self.image_dim, self.image_dim, channels)
+        self.image_width, self.image_height = resize_shape
+        self.input_shape = (self.image_width, self.image_height, channels)
 
         if load_from_npz:
             preprocessed_data = self.load_images_and_labels_from_npz(npz_paths, use_grayscale)
@@ -40,7 +42,7 @@ class DataLoader:
             if balancing:
                 data = self.balance_data(data, upsampling_size)
 
-            images, labels = self.load_images_and_labels(data)
+            images, labels = self.load_images_and_labels(data, resize_shape)
             self.num_classes = self.get_number_of_classes(labels)
             preprocessed_data = self.preprocess(images, labels, self.num_classes, save_to_npz, use_grayscale, label)
 
@@ -161,16 +163,16 @@ class DataLoader:
         return data
 
 
-    def load_images_and_labels(self, data):
-        image_dim = self.image_dim
+    def load_images_and_labels(self, data, resize_shape):
+        # image_dim = self.image_dim
 
         print("Load images and labels from data...")
 
         # Create 4 image arrays to speed up the data loading
-        images1 = np.empty((0, image_dim, image_dim), int)
-        images2 = np.empty((0, image_dim, image_dim), int)
-        images3 = np.empty((0, image_dim, image_dim), int)
-        images4 = np.empty((0, image_dim, image_dim), int)
+        images1 = np.empty((0, self.image_width, self.image_height), int)
+        images2 = np.empty((0, self.image_width, self.image_height), int)
+        images3 = np.empty((0, self.image_width, self.image_height), int)
+        images4 = np.empty((0, self.image_width, self.image_height), int)
         labels = np.array([], int)
 
         i = 0
@@ -180,17 +182,18 @@ class DataLoader:
 
         start_time = time.time()
         for label in data.keys():
-            images_chunk = np.empty((0, image_dim, image_dim), int)
+            images_chunk = np.empty((0, self.image_width, self.image_height), int)
             files = []
 
             print(f"Load from folder {i}...")
             for index, file in enumerate(data[label]):
                 if file not in files:
-                    img = np.array(Image.open(file))
+                    img = Image.open(file)
+                    img = np.array(img.resize(resize_shape))
                     files.append(file)
                 else:
                     img = images_chunk[index-1]
-                images_chunk = np.append(images_chunk, img.reshape(1, image_dim, image_dim), axis=0)
+                images_chunk = np.append(images_chunk, img.reshape(1, self.image_width, self.image_height), axis=0)
                 labels = np.append(labels, i)
 
             if i < images_length:
@@ -244,7 +247,7 @@ class DataLoader:
         print("Data splitted in train and test sets")
 
         if save_to_npz:
-            print("Save train and test sets and labels to npz files...")
+            print("Save train and test images and labels to npz files...")
             np.savez(f"train_images_{label}.npz", train_images)
             np.savez(f"test_images_{label}.npz", test_images)
             np.savez(f"train_labels_{label}.npz", train_labels)

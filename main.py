@@ -34,18 +34,19 @@ except:
 balancing = True
 batch_size = 128
 csv_file = ""
+data_dir = ""
 epochs = 50
 label = ""
 learning_rate = 1e-4
 load_from_npz = False
 npz_paths = []
-model_path = ""
 save_to_npz = True
 resize_shape = (64,64)
 upsampling_size = 25
 use_grayscale = False
 
-data_dir = args.data
+if args.data:
+    data_dir = args.data
 
 if args.balancing == "False":
     balancing = False
@@ -86,7 +87,7 @@ if args.use_grayscale == "True":
 
 try:
     data_loader = data_loading.DataLoader(
-        data_dir,
+        data_dir=data_dir,
         balancing=balancing, upsampling_size=upsampling_size,
         load_from_npz=load_from_npz, npz_paths=npz_paths,
         save_to_npz=save_to_npz,

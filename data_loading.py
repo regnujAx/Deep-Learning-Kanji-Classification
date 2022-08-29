@@ -243,7 +243,7 @@ class DataLoader:
         labels = to_categorical(labels, num_classes)
 
         # Split the whole dataset in train and test datasets (images and labels)
-        train_images, test_images, train_labels, test_labels = train_test_split(images, labels, test_size=0.09)
+        train_images, test_images, train_labels, test_labels = train_test_split(images, labels, test_size=0.1)
         print("Data splitted in train and test sets")
 
         if save_to_npz:

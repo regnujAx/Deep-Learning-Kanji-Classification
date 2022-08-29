@@ -1,6 +1,8 @@
 # internal scripts
 import test, train
 
+import time
+
 from keras import Input
 from keras.applications.resnet import ResNet50
 from keras.applications.vgg16 import VGG16
@@ -49,12 +51,18 @@ def transfer_learning_with_local_model(loaded_model, data_loader, batch_size, ep
         loss=categorical_crossentropy,
         metrics=["accuracy"])
 
+    start_time = time.time()
+
     # Train the model on the new data
     history = model.fit(
         train_images, train_labels, 
         epochs=epochs, 
         validation_data=(validation_images, validation_labels), 
         batch_size=batch_size)
+
+    elapsed_time = time.time() - start_time
+    time_string = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
+    print("\nElapsed time for training:", time_string)
 
     train.save_model(model, save_name=label)
     test.plot_accuracy_and_loss(history, label)

@@ -1,6 +1,8 @@
 # internal script
 import cnn_model
 
+import time
+
 from datetime import datetime
 
 
@@ -17,11 +19,17 @@ def train_model(data_loader, batch_size, epochs, learning_rate):
 
     model.summary()
 
+    start_time = time.time()
+
     history = model.fit(
       train_images, train_labels,
       epochs=epochs,
       validation_data=(validation_images, validation_labels),
       batch_size=batch_size)
+
+    elapsed_time = time.time() - start_time
+    time_string = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
+    print("\nElapsed time for training:", time_string)
 
     save_model(model)
 

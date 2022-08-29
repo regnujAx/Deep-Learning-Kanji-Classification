@@ -18,10 +18,10 @@ def evaluate_model(model, test_images, test_labels, batch_size):
     today = datetime.now()
     currentDateTime = today.strftime("%b-%d-%Y-%H-%M-%S")
 
-    f = open("evaluation.txt", "a")
-    f.write(f"{currentDateTime}:\n")
-    f.write(f"The test loss is: {str(results[0])}\n")
-    f.write(f"The test accuracy is: {str(results[1])}\n\n")
+    file = open("evaluation.txt", "a")
+    file.write(f"{currentDateTime}:\n")
+    file.write(f"The test loss is: {str(results[0])}\n")
+    file.write(f"The test accuracy is: {str(results[1])}\n\n")
 
     predictions = model.predict(test_images, batch_size=batch_size)
 
@@ -36,10 +36,10 @@ def evaluate_model(model, test_images, test_labels, batch_size):
     print("The Precision is:", precision)
     print("The Recall is:", recall)
     print("The F1-score is:", f1)
-    f.write(f"The Precision is: {str(precision)}\n")
-    f.write(f"The Recall is: {str(recall)}\n")
-    f.write(f"The F1-score is: {str(f1)}\n\n")
-    f.close()
+    file.write(f"The Precision is: {str(precision)}\n")
+    file.write(f"The Recall is: {str(recall)}\n")
+    file.write(f"The F1-score is: {str(f1)}\n\n")
+    file.close()
 
 
 def plot_accuracy_and_loss(history, label):

@@ -42,11 +42,12 @@ You can run the main.py with different (optional) arguments:<br />
 
 **HINT: Because of the defaults of the most arguments make sure that you pass the correct values.**
 
-You can run the following command if you have downloaded and extracted the [Kanji dataset](https://www.kaggle.com/datasets/anokas/kuzushiji) and want to use the default values (here with the label \'kanji\'):<br />
+Example commands:
+- You can run the following command if you have downloaded and extracted the [Kanji dataset](https://www.kaggle.com/datasets/anokas/kuzushiji) and want to use the default values (here with the label \'kanji\'):<br />
 ```python main.py -d path/to/archive/kkanji/kkanji2 -l kanji```
 
-If you have downloaded and extracted the [Chinese MNIST dataset](https://www.kaggle.com/datasets/gpreda/chinese-mnist) and want to use the ResNet50 model for transfer learning, use the following command in your CLI (here with the label \'pretrained_resnet\'):<br />
+- If you have downloaded and extracted the [Chinese MNIST dataset](https://www.kaggle.com/datasets/gpreda/chinese-mnist) and want to use the ResNet50 model for transfer learning, use the following command in your CLI (here with the label \'pretrained_resnet\'):<br />
 ```python main.py -d path/to/chinese-MNIST/data/data -c path/to/chinese-MNIST/chinese_mnist.csv -pm resnet50 -l pretrained_resnet -b False -rs 224 224 -g True```
 
-If you have run the main.py once and the saving of the data as npz files was successful, you can load the data from these npz files to save time (here with the label \'loaded_from_npz\'):<br />
+- If you have run the main.py once and the saving of the data as npz files was successful, you can load the data from these npz files to save time (here with the label \'loaded_from_npz\'):<br />
 ```python main.py -ln True -np path/to/train_images.npz path/to/train_labels.npz path/to/test_images.npz path/to/test_labels.npz -l loaded_from_npz```

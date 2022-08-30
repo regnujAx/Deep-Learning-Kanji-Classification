@@ -13,9 +13,6 @@ from sklearn.utils import resample
 
 
 class DataLoader:
-
-    # image_dim = 64
-
     def __init__(
             self, data_dir,
             balancing, upsampling_size,
@@ -131,10 +128,25 @@ class DataLoader:
         train_labels = np.load(train_labels_path)["arr_0"]
         test_images = np.load(test_images_path)["arr_0"]
         test_labels = np.load(test_labes_path)["arr_0"]
+
+        # Check if the train and test images have the correct shape
+        if train_images.ndim != 4:
+            train_images = np.expand_dims(train_images, axis=-1)
+        if test_images.ndim != 4:
+            test_images = np.expand_dims(test_images, axis=-1)
+
         print(f"\nNumber of training samples: {len(train_images)} where each sample is of size: {train_images.shape[1:]}")
         print(f"\nNumber of validation samples: {len(test_images)} where each sample is of size: {test_images.shape[1:]}")
-        
+
+        # Check if the train and test labels are one-hot encoded
+        if train_labels.ndim != 2:
+            num_classes = len(np.unique(train_labels))
+            train_labels = to_categorical(train_labels, num_classes)
+        if test_labels.ndim != 2:
+            num_classes = len(np.unique(test_labels))
+            test_labels = to_categorical(test_labels, num_classes)
         num_classes = train_labels.shape[1]
+        
         print("\nNumber of classes:", num_classes)
 
         # Split the train dataset in train and validation datasets
@@ -164,8 +176,6 @@ class DataLoader:
 
 
     def load_images_and_labels(self, data, resize_shape):
-        # image_dim = self.image_dim
-
         print("Load images and labels from data...")
 
         # Create 4 image arrays to speed up the data loading

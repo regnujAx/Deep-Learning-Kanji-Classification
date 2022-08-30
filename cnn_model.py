@@ -14,21 +14,21 @@ class CNNModel():
 
         model.add(Conv2D(32, (5, 5), strides=(1, 1), activation="relu", input_shape=input_shape, padding="same"))
 
-        model.add(Conv2D(32, (5, 5), strides=(2, 2), activation="relu"))
+        model.add(Conv2D(32, (5, 5), strides=(2, 2), activation="relu", padding="same"))
         model.add(MaxPooling2D((2, 2)))
         model.add(BatchNormalization())
         model.add(Dropout(0.3))
 
         model.add(Conv2D(64, (3, 3), strides=(1, 1), activation="relu", padding="same"))
 
-        model.add(Conv2D(64, (3, 3), strides=(1, 1), activation="relu"))
+        model.add(Conv2D(64, (3, 3), strides=(1, 1), activation="relu", padding="same"))
         model.add(MaxPooling2D((2, 2)))
         model.add(BatchNormalization())
         model.add(Dropout(0.3))
 
         model.add(Conv2D(96, (3, 3), strides=(1, 1), activation="relu", padding="same"))
 
-        model.add(Conv2D(96, (3, 3), strides=(1, 1), activation="relu"))
+        model.add(Conv2D(96, (3, 3), strides=(1, 1), activation="relu", padding="same"))
         model.add(MaxPooling2D((2, 2)))
         model.add(BatchNormalization())
         model.add(Dropout(0.3))

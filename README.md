@@ -47,11 +47,14 @@ Example commands:
 ```python main.py -d path/to/archive/kkanji/kkanji2 -l kanji```
 
 - If you have downloaded and extracted the [Chinese MNIST dataset](https://www.kaggle.com/datasets/gpreda/chinese-mnist) and want to use the ResNet50 model for transfer learning, use the following command in your CLI (here with the label \'pretrained_resnet\'):<br />
-```python main.py -d path/to/chinese-MNIST/data/data -c path/to/chinese-MNIST/chinese_mnist.csv -pm resnet50 -l pretrained_resnet -b False -rs 224 224 -g True```
-**HINT: Please be sure that you use -g True for pretrained models because of the channels of the used images for training these models.**
+```python main.py -d path/to/chinese-MNIST/data/data -c path/to/chinese-MNIST/chinese_mnist.csv -pm resnet50 -l pretrained_resnet -b False -rs 224 224 -g True```<br />
+**HINT: Please be sure that you use -g True for pretrained models as ResNet50 and VGG16 because of the channels of the used images for training these models.**
 
 - If you have run the main.py once and the saving of the data as npz files was successful, you can load the data from these npz files to save time (here with the label \'loaded_from_npz\'):<br />
 ```python main.py -ln True -np path/to/train_images.npz path/to/train_labels.npz path/to/test_images.npz path/to/test_labels.npz -l loaded_from_npz```
+
+- If you have a local pretrained model that you want to use for transfer learning with  [Chinese MNIST dataset](https://www.kaggle.com/datasets/gpreda/chinese-mnist) you can use the following command in your CLI (with no balancing):<br />
+```python main.py -d ..\\chinese-MNIST\\data\\data -c ..\\chinese-MNIST\\chinese_mnist.csv -mp path_to_pretrained_model.h5 -l pretrained_model -b False```
 
 ## Model files
 

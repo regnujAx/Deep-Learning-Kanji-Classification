@@ -1,4 +1,5 @@
 # internal scripts
+from ctypes import resize
 import test, train
 
 import time
@@ -14,7 +15,7 @@ from keras.optimizers import Adam
 
 ### Transfer learning based on https://keras.io/guides/transfer_learning/
 
-def transfer_learning_with_local_model(loaded_model, data_loader, batch_size, epochs, learning_rate, label="transfer_learning"):
+def transfer_learning_with_local_model(loaded_model, data_loader, batch_size, epochs, learning_rate, label):
     input_shape = data_loader.input_shape
     num_classes = data_loader.num_classes
     train_images = data_loader.train_images
@@ -64,10 +65,10 @@ def transfer_learning_with_local_model(loaded_model, data_loader, batch_size, ep
     time_string = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
     print("\nElapsed time for training:", time_string)
 
-    train.save_model(model, save_name=label)
+    train.save_model(model, label)
     test.plot_accuracy_and_loss(history, label)
     test.evaluate_model(model, test_images, test_labels, batch_size)
-    test.plot_predictions(model, test_images, test_labels, label=label)
+    test.plot_predictions(model, test_images, test_labels, input_shape[:2], label)
 
 
 def transfer_learning_with_pretrained_model(model_name, data_loader, batch_size, epochs, learning_rate):
@@ -119,4 +120,4 @@ def transfer_learning_with_pretrained_model(model_name, data_loader, batch_size,
     train.save_model(model, save_name=model_name)
     test.plot_accuracy_and_loss(history, model_name)
     test.evaluate_model(model, test_images, test_labels, batch_size)
-    test.plot_predictions(model, test_images, test_labels, label=model_name, channels=3)
+    test.plot_predictions(model, test_images, test_labels, input_shape[:2], label=model_name, channels=3)

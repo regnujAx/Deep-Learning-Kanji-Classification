@@ -64,7 +64,7 @@ def plot_accuracy_and_loss(history, label):
     plt.clf()
 
 
-def plot_predictions(model, test_images, test_labels, label="", channels=1):
+def plot_predictions(model, test_images, test_labels, shape, label, channels=1):
     print("Plot some output predictions...")
 
     n = 8
@@ -79,11 +79,11 @@ def plot_predictions(model, test_images, test_labels, label="", channels=1):
     random_labels = test_labels[random_idx].argmax(axis=1).reshape(n, n)
     pred_labels = model.predict(random_set).argmax(axis=1).reshape(n, n)
 
-    random_set = random_set.reshape(n, n, 64, 64, channels)
+    random_set = random_set.reshape(n, n, shape[0], shape[1], channels)
 
     # Create an n x n grid
     fig, ax = plt.subplots(n, n, figsize=(15, 15))
-    fig.suptitle("Test set predictions (truth label/prediction label)", fontsize=20)
+    fig.suptitle("Test set predictions (truth label/prediction label)", fontsize=25)
 
     for i in range(random_set.shape[0]):
         for j in range(random_set.shape[1]):

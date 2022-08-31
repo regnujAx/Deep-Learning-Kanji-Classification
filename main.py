@@ -101,13 +101,13 @@ try:
 
     if args.model_path:
         model = keras.models.load_model(args.model_path)
-        transfer_learning.transfer_learning_with_local_model(model, data_loader, batch_size, epochs, learning_rate, label=label)
+        transfer_learning.transfer_learning_with_local_model(model, data_loader, batch_size, epochs, learning_rate, label)
     elif args.pretrained_model:
         transfer_learning.transfer_learning_with_pretrained_model(args.pretrained_model, data_loader, batch_size, epochs, learning_rate)
     else:
-        model, history = train.train_model(data_loader, batch_size, epochs, learning_rate)
-        test.plot_accuracy_and_loss(history, label=label)
+        model, history = train.train_model(data_loader, batch_size, epochs, learning_rate, label)
+        test.plot_accuracy_and_loss(history, label)
         test.evaluate_model(model, test_images, test_labels, batch_size)
-        test.plot_predictions(model, test_images, test_labels, label=label)
+        test.plot_predictions(model, test_images, test_labels, resize_shape, label)
 except Exception as e:
     print(e)

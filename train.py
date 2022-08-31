@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 
 
-def train_model(data_loader, batch_size, epochs, learning_rate):
+def train_model(data_loader, batch_size, epochs, learning_rate, label):
     input_shape = data_loader.input_shape
     num_classes = data_loader.num_classes
     train_images = data_loader.train_images
@@ -31,18 +31,18 @@ def train_model(data_loader, batch_size, epochs, learning_rate):
     time_string = time.strftime("%H:%M:%S", time.gmtime(elapsed_time))
     print("\nElapsed time for training:", time_string)
 
-    save_model(model)
+    save_model(model, label)
 
     return model, history
 
 
-def save_model(model, save_name=""):
+def save_model(model, label):
     # Get the current date and time
     today = datetime.now()
     currentDateTime = today.strftime("%b-%d-%Y-%H-%M-%S")
 
     # Save the model
     save_file_name = f"model_{currentDateTime}"
-    if save_name != "":
-        save_file_name = f"{save_name}_{save_file_name}"
+    if label != "":
+        save_file_name = f"{label}_{save_file_name}"
     model.save(f"{save_file_name}.h5")

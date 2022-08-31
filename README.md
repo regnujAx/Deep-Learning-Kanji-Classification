@@ -70,7 +70,7 @@ Kuzushiji-49, Kuzushiji-MNIST, Kuzushiji-Kanji Datasets: https://www.kaggle.com/
 
 Chinese-MNIST: https://www.kaggle.com/datasets/gpreda/chinese-mnist
 
-## Notes Regarding demo file:
+## Notes Regarding Demo File:
 
 We made three demo files to represent our work with different datasets.
 

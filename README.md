@@ -59,3 +59,23 @@ Example commands:
 ## Model files
 
 The used and trained models can be found [here](https://drive.google.com/drive/folders/1EqbCbd32bO3biHrdts9aO1wVDTHMXmib?usp=sharing).
+
+## Github Link
+
+The Github Link is: https://github.com/regnujAx/Deep-Learning-Kanji-Classification
+
+## Dataset Links
+
+Kuzushiji-49, Kuzushiji-MNIST, Kuzushiji-Kanji Datasets: https://www.kaggle.com/datasets/anokas/kuzushiji
+
+Chinese-MNIST: https://www.kaggle.com/datasets/gpreda/chinese-mnist
+
+## Notes Regarding demo file:
+
+We made three demo files to represent our work with different datasets.
+
+1) demo.ipynb  --Represents main demo file where we worked with Kuzushiji-Kanji and Chinese-MNIST datasets along with transfer learning
+
+2) demo_kuzushiji_mnist_classification.ipynb  --Where we worked with Kuzushiji-MNIST dataset
+
+3) demo_kuzushiji_49_classification.ipynb  --Where we worked with Kuzushiji-49 dataset

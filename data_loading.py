@@ -136,7 +136,7 @@ class DataLoader:
             test_images = np.expand_dims(test_images, axis=-1)
 
         print(f"\nNumber of training samples: {len(train_images)} where each sample is of size: {train_images.shape[1:]}")
-        print(f"\nNumber of validation samples: {len(test_images)} where each sample is of size: {test_images.shape[1:]}")
+        print(f"\nNumber of test samples: {len(test_images)} where each sample is of size: {test_images.shape[1:]}")
 
         # Check if the train and test labels are one-hot encoded
         if train_labels.ndim != 2:

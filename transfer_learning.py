@@ -68,7 +68,7 @@ def transfer_learning_with_local_model(loaded_model, data_loader, batch_size, ep
     train.save_model(model, label)
     test.plot_accuracy_and_loss(history, label)
     test.evaluate_model(model, test_images, test_labels, batch_size)
-    test.plot_predictions(model, test_images, test_labels, input_shape[:2], label)
+    test.plot_predictions(model, test_images, test_labels, input_shape[:2], label, channels=input_shape[2])
 
 
 def transfer_learning_with_pretrained_model(model_name, data_loader, batch_size, epochs, learning_rate):
@@ -120,4 +120,4 @@ def transfer_learning_with_pretrained_model(model_name, data_loader, batch_size,
     train.save_model(model, save_name=model_name)
     test.plot_accuracy_and_loss(history, model_name)
     test.evaluate_model(model, test_images, test_labels, batch_size)
-    test.plot_predictions(model, test_images, test_labels, input_shape[:2], label=model_name, channels=3)
+    test.plot_predictions(model, test_images, test_labels, input_shape[:2], label=model_name, channels=input_shape[2])

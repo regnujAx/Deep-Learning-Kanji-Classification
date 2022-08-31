@@ -54,7 +54,7 @@ Example commands:
 ```python main.py -ln True -np path/to/train_images.npz path/to/train_labels.npz path/to/test_images.npz path/to/test_labels.npz -l loaded_from_npz```
 
 - If you have a local pretrained model that you want to use for transfer learning with  [Chinese MNIST dataset](https://www.kaggle.com/datasets/gpreda/chinese-mnist) you can use the following command in your CLI (with no balancing):<br />
-```python main.py -d ..\\chinese-MNIST\\data\\data -c ..\\chinese-MNIST\\chinese_mnist.csv -mp path_to_pretrained_model.h5 -l pretrained_model -b False```
+```python main.py -d path/to/chinese-MNIST/data/data -c path/to/chinese-MNIST/chinese_mnist.csv -mp path/to/pretrained_model.h5 -l pretrained_model -b False```
 
 ## Model files
 

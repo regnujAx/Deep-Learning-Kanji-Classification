@@ -1,9 +1,9 @@
 # Kanji Classification
 
 This is the practical part of a project that took place as part of the Deep Learning course at the Hasso Plattner Institute under the supervision of Prof. Dr. Lippert.<br />
-The goal of this lecture was to train a model with the data of [Kanji characters](https://www.kaggle.com/datasets/anokas/kuzushiji). After training, we should use the model for transfer learning on the [Chinese MNIST dataset](https://www.kaggle.com/datasets/gpreda/chinese-mnist). We were also advised to try alternatives to CNNs.
+The goal of this lecture was to train a model with the data of [Kuzushiji characters](https://www.kaggle.com/datasets/anokas/kuzushiji). After training, we should use the model for transfer learning on the [Chinese MNIST dataset](https://www.kaggle.com/datasets/gpreda/chinese-mnist). We were also advised to try alternatives to CNNs.
 
-# Requirements
+## Requirements
 
 - Python 3.7 or higher
 
@@ -19,7 +19,7 @@ For the following requirements you could run ```pip -r requirements.txt``` (or s
 - sklearn
 - time
 
-# How to use
+## How to use
 
 Use -h/--help to show all possible arguments for the main.py.
 
@@ -36,14 +36,14 @@ You can run the main.py with different (optional) arguments:<br />
 -mp/--model_path: Can be a (relational) path to a local pretrained model to load it for transfer learning.<br />
 -np/--npz_paths: Can be a list of four (relational) paths to the npz files that contains the train images, train labels, test images and test labels (only with -ln True). For an example command see below (default is an empty list).<br />
 -pm/--pretrained_model: Can be resnet50 or vgg16 for selecting a pretrained model (ResNet50 or VGG16) for transfer learning.<br />
--rs/--resize_shape: Can be two numbers which indicate the shape (width and height) of images to be resized (e.g. use \'-rs 224 224\' for the shape (224,224)) (default is (64,64)).<br />
+-rs/--resize_shape: Can be two numbers which indicate the shape (width and height) of images to be resized (e.g., use \'-rs 224 224\' for the shape (224,224)) (default is (64,64)).<br />
 -sn/--save_to_npz: Can be True or False and indicates whether the loaded data should be saved as npz files (default is True).<br />
 -us/--upsampling_size: Can be an integer which indicates the upsampling size (default is 25).
 
 **HINT: Because of the defaults of the most arguments make sure that you pass the correct values.**
 
 Example commands:
-- You can run the following command if you have downloaded and extracted the [Kanji dataset](https://www.kaggle.com/datasets/anokas/kuzushiji) and want to use the default values (here with the label \'kanji\'):<br />
+- You can run the following command if you have downloaded and extracted the [Kuzushiji dataset](https://www.kaggle.com/datasets/anokas/kuzushiji) and want to use the default values (here with the label \'kanji\'):<br />
 ```python main.py -d path/to/archive/kkanji/kkanji2 -l kanji```
 
 - If you have downloaded and extracted the [Chinese MNIST dataset](https://www.kaggle.com/datasets/gpreda/chinese-mnist) and want to use the ResNet50 model for transfer learning, use the following command in your CLI (here with the label \'pretrained_resnet\'):<br />
@@ -52,3 +52,7 @@ Example commands:
 
 - If you have run the main.py once and the saving of the data as npz files was successful, you can load the data from these npz files to save time (here with the label \'loaded_from_npz\'):<br />
 ```python main.py -ln True -np path/to/train_images.npz path/to/train_labels.npz path/to/test_images.npz path/to/test_labels.npz -l loaded_from_npz```
+
+## Model files
+
+The used and trained models can be found [here](https://drive.google.com/drive/folders/1EqbCbd32bO3biHrdts9aO1wVDTHMXmib?usp=sharing).
